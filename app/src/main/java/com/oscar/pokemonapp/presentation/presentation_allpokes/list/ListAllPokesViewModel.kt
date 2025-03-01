@@ -1,4 +1,4 @@
-package com.oscar.pokemonapp.presentation.presentation_allpokes
+package com.oscar.pokemonapp.presentation.presentation_allpokes.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

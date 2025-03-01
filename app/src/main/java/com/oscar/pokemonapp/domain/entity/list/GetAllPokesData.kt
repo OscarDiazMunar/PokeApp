@@ -1,4 +1,4 @@
-package com.oscar.pokemonapp.domain.entity
+package com.oscar.pokemonapp.domain.entity.list
 
 data class GetAllPokesData(
     val id: String,

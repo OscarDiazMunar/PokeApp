@@ -2,8 +2,10 @@ package com.oscar.pokemonapp.data.data_remote.source
 
 import com.oscar.pokemonapp.data.data_remote.networking.allpokes.GetAllPokesService
 import com.oscar.pokemonapp.data.data_remote.networking.allpokes.model.Result
+import com.oscar.pokemonapp.data.data_remote.networking.allpokes.model.detail.DetailPokeDTO
 import com.oscar.pokemonapp.data.data_repository.data_source.remote.RemoteAllPokesDataSource
-import com.oscar.pokemonapp.domain.entity.GetAllPokesData
+import com.oscar.pokemonapp.domain.entity.detail.DetailPokeData
+import com.oscar.pokemonapp.domain.entity.list.GetAllPokesData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -18,9 +20,24 @@ class RemoteAllPokesDataSourceImpl @Inject constructor(
         convert(pokes.results)
     }
 
+    override fun getDetailPoke(id: String): Flow<DetailPokeData> = flow {
+        emit(getAllPokesService.getDetailPoke(id))
+    }.map {
+        convertDetailDTO(it)
+    }
+
+    private fun convertDetailDTO(detailPokeDTO: DetailPokeDTO): DetailPokeData {
+        return DetailPokeData(
+            id = detailPokeDTO.id,
+            abilities = detailPokeDTO.abilities,
+            stats = detailPokeDTO.stats,
+            types = detailPokeDTO.types,
+            forms = detailPokeDTO.forms
+        )
+    }
+
     private fun convert(results: List<Result>): List<GetAllPokesData>  {
-        //val allPokesData = emptyList<GetAllPokesData>()
-        //https://pokeapi.co/api/v2/type/12/
+
         val allPokesData = results.map {
             GetAllPokesData(
                 id = getLastNumberFromUrl(it.url),

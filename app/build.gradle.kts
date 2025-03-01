@@ -62,15 +62,14 @@ dependencies {
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
-    //implementation(libs.coroutinesAndroid)
-    //implementation(libs.coroutines.core)
+    implementation(libs.navigations.compose)
     // hilt
     implementation(libs.hilt)
     kapt(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
     // coil
     implementation(libs.coil)
-    /*implementation(libs.coil.network)*/
+
     // Retrofit
     implementation(libs.okhttp3)
     implementation(libs.okhttp3.logging.interceptor)

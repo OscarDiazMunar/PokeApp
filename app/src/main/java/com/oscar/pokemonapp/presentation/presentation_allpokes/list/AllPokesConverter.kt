@@ -1,4 +1,4 @@
-package com.oscar.pokemonapp.presentation.presentation_allpokes
+package com.oscar.pokemonapp.presentation.presentation_allpokes.list
 
 import android.content.Context
 import com.oscar.pokemonapp.domain.usecase.GetAllPokesUseCase
