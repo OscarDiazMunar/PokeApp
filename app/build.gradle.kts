@@ -81,6 +81,7 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     kapt(libs.room.compiler)
+    implementation(libs.gson.code)
 
     // Paging
     implementation(libs.paging.compose)

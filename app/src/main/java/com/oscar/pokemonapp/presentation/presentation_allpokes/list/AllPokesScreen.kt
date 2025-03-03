@@ -70,7 +70,7 @@ fun AllPokesScreen(
                 floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-
+                    navController.navigate(NavigationScreen.Detail.route + "/local" )
                 },
                 containerColor = Color.Yellow
             ) {

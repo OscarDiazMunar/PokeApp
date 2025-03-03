@@ -43,7 +43,9 @@ fun DetailPokeScreen(
     viewModel: DetailPokeViewModel,
     navController: NavController
 ) {
-    LaunchedEffect(id) { id?.let { viewModel.loadDetailPoke(it) } }
+    LaunchedEffect(id) { id?.let {
+        viewModel.fetchDetailPoke(it)
+    }}
 
     viewModel.getDetailFlow.collectAsState().value.let { state ->
     Scaffold(

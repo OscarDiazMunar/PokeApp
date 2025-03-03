@@ -12,12 +12,14 @@ nav_version = "2.7.1"
 coroutines = "1.9.0"
 retrofit2 = "2.9.0"
 okhttp3 = "4.9.0"
-room = "2.4.0"
+room = "2.6.1"
 moshi = "1.13.0"
 coil = "2.4.0"
 hilt = "2.46.1"
 hiltNavigationCompose = "1.2.0"
 paging = "3.2.1"
+gson = "2.10.1"
+
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -43,6 +45,8 @@ moshi-converter = { group = "com.squareup.retrofit2", name = "converter-moshi", 
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+gson-code = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+
 moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" }
 moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
 coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }

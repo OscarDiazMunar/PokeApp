@@ -45,6 +45,5 @@ fun Loading() {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         //CircularProgressIndicator()
-        //CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
     }
 }
