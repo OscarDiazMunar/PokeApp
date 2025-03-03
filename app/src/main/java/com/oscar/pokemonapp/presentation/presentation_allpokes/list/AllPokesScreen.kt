@@ -4,16 +4,26 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -34,16 +44,42 @@ fun AllPokesScreen(
     navController: NavHostController
 ) {
     val pokesList: LazyPagingItems<GetAllPokesData> = viewModel.getListFlow.collectAsLazyPagingItems()
+    var searchQuery by remember { mutableStateOf("") }
+
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.app_name)) },
-                colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Blue)
-            )
+            Column {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.app_name)) },
+                    colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Blue)
+                )
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = {
+                        searchQuery = it
+                        viewModel.setSearchQuery(searchQuery)
+                                    },
+                    placeholder = { Text(stringResource(R.string.search_poke)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    singleLine = true
+                )
+            }
+        },
+                floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+
+                },
+                containerColor = Color.Yellow
+            ) {
+                Icon(imageVector = Icons.Default.Check, contentDescription = "Add Pokémon")
+            }
         }
-    ){ innerPadding ->
-        AllPokes(listPokesModel = pokesList , innerPadding){ itemId ->
-            navController.navigate(NavigationScreen.Detail.route + "/"+ itemId)
+    ) { innerPadding ->
+        AllPokes(listPokesModel = pokesList, innerPadding) { itemId ->
+            navController.navigate(NavigationScreen.Detail.route + "/" + itemId)
         }
     }
 }
@@ -53,7 +89,7 @@ fun AllPokes(
     listPokesModel: LazyPagingItems<GetAllPokesData>,
     paddingA: PaddingValues,
     onRowClick: (String) -> Unit
-){
+) {
     GridPoke(pokes = listPokesModel, paddingA = paddingA, onRowClick)
 }
 
@@ -62,7 +98,7 @@ fun GridPoke(
     pokes: LazyPagingItems<GetAllPokesData>,
     paddingA: PaddingValues,
     onRowClick: (String) -> Unit
-){
+) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(180.dp),
         modifier = Modifier.padding(paddingA))
@@ -72,7 +108,6 @@ fun GridPoke(
             PokeImage(modifier = Modifier, poke){
                 onRowClick(it)
             }
-
         }
     }
 }
@@ -81,12 +116,13 @@ fun GridPoke(
 fun PokeImage(
     modifier: Modifier,
     poke: GetAllPokesData,
-    onRowClick: (String) -> Unit) {
+    onRowClick: (String) -> Unit
+) {
     val imageurl = Constants.urlImage + poke.id + ".png"
     Column(
         modifier = Modifier
             .padding(10.dp)
-            .clickable { onRowClick(poke.id) },
+            .clickable { onRowClick(poke.id) }
     ) {
         Card {
             AsyncImage(
