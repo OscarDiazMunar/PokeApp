@@ -1,5 +1,6 @@
 package com.oscar.pokemonapp.data.data_remote.source
 
+import com.oscar.pokemonapp.commons.Constants.LIMIT_PAGE
 import com.oscar.pokemonapp.data.data_remote.networking.allpokes.GetAllPokesService
 import com.oscar.pokemonapp.data.data_remote.networking.allpokes.model.Result
 import com.oscar.pokemonapp.data.data_remote.networking.allpokes.model.detail.DetailPokeDTO
@@ -14,8 +15,8 @@ import javax.inject.Inject
 class RemoteAllPokesDataSourceImpl @Inject constructor(
     private val getAllPokesService: GetAllPokesService
 ): RemoteAllPokesDataSource {
-    override fun getAllPokes(limit: String): Flow<List<GetAllPokesData>> = flow {
-        emit(getAllPokesService.getAllPokes(limit, "1"))
+    override fun getAllPokes(limit: String, offset: Int): Flow<List<GetAllPokesData>> = flow {
+        emit(getAllPokesService.getAllPokes(LIMIT_PAGE, offset.toString()))
     }.map { pokes ->
         convert(pokes.results)
     }

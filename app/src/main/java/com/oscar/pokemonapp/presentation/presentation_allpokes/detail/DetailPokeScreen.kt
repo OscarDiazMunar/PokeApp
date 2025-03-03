@@ -1,15 +1,17 @@
 package com.oscar.pokemonapp.presentation.presentation_allpokes.detail
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -17,10 +19,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -39,136 +43,111 @@ fun DetailPokeScreen(
     viewModel: DetailPokeViewModel,
     navController: NavController
 ) {
-
-    viewModel.loadDetailPoke(id!!)
+    LaunchedEffect(id) { id?.let { viewModel.loadDetailPoke(it) } }
 
     viewModel.getDetailFlow.collectAsState().value.let { state ->
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text(stringResource(R.string.app_name)) },
-                    colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Blue)
-                )
-            }
-        ) { innerPadding ->
-            CommonScreen(state = state) {
-                Box(modifier = Modifier
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.app_name)) },
+                colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = MaterialTheme.colorScheme.primary)
+            )
+        }
+    ) { innerPadding ->
+        CommonScreen(state = state) { detailPokeModel ->
+            Box(
+                modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
-                ){
-                        CardDetailPoke(
-                            Modifier.align(Alignment.Center),
-                            it,
-                            innerPadding
-                        )
-                    }
-
+                    .padding(innerPadding)
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CardDetailPoke(detailPokeModel)
             }
         }
     }
 }
+}
 
 @Composable
-fun CardDetailPoke(
-    modifier: Modifier,
-    detailPokeModel: DetailPokeModel,
-    innerPadding: PaddingValues
-) {
-
-
-    LazyColumn(
+fun CardDetailPoke(detailPokeModel: DetailPokeModel) {
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(innerPadding)
+            .shadow(10.dp, RoundedCornerShape(20.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp)
     ) {
-        item {
-            Header(detailPokeModel)
+        LazyColumn(
+            modifier = Modifier.padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            item { Header(detailPokeModel) }
+            item { InfoSection(title = stringResource(R.string.abilities), content = detailPokeModel.abilities.joinToString { it.ability.name }) }
+            item { InfoSection(title = stringResource(R.string.stats), content = detailPokeModel.stats.joinToString("\n") { "${it.stat.name}: ${it.baseStat}" }) }
+            item { InfoSection(title = stringResource(R.string.type), content = detailPokeModel.types.joinToString { it.type.name }) }
         }
-
     }
 }
+
 @Composable
 fun Header(detailPokeModel: DetailPokeModel) {
-    val imageurl = Constants.urlImage + detailPokeModel.id + ".png"
-
+    val imageUrl = "${Constants.urlImage}${detailPokeModel.id}.png"
     Column(
-        modifier = Modifier.fillMaxWidth()
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(16.dp)
     ) {
         Text(
-            text = detailPokeModel.forms[0].name,
-            style = MaterialTheme.typography.titleLarge,
-            fontSize = 35.sp,
+            text = detailPokeModel.forms.firstOrNull()?.name ?: "Unknown",
+            style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-        Card {
+            color = MaterialTheme.colorScheme.primary
+        )
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier
+                .padding(12.dp)
+                .shadow(8.dp, RoundedCornerShape(16.dp))
+        ) {
             AsyncImage(
-                model = imageurl,
-                contentDescription = "",
-                contentScale = ContentScale.Fit,
+                model = imageUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .padding(8.dp)
+                    .size(250.dp)
+                    .clip(RoundedCornerShape(16.dp))
             )
         }
-        Spacer(modifier = Modifier.padding(4.dp))
-        Text(
+    }
+}
 
-            text = stringResource(R.string.abilities),
-            fontSize = 16.sp,
+@Composable
+fun InfoSection(title: String, content: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        horizontalAlignment = Alignment.Start
+    ) {
+        Text(
+            text = title,
+            fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Gray,
-            modifier = Modifier.padding(top = 4.dp)
+            color = MaterialTheme.colorScheme.primary
         )
-        Text(
-
-            text = "${detailPokeModel.abilities.map {
-                it.ability.name
-            }.joinToString(", ")}",
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color.Green,
-            modifier = Modifier.padding(top = 4.dp)
-        )
-
-        Spacer(modifier = Modifier.padding(4.dp))
-        Text(
-
-            text = stringResource(R.string.stats),
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Gray,
-            modifier = Modifier.padding(top = 4.dp)
-        )
-        Text(
-            text = "${detailPokeModel.stats.map {
-                it.stat.name + " : " + it.baseStat
-            }.joinToString("\n")}",
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color.Gray,
-            modifier = Modifier.padding(top = 4.dp)
-        )
-
-        Spacer(modifier = Modifier.padding(4.dp))
-        Text(
-
-            text = stringResource(R.string.type),
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Gray,
-            modifier = Modifier.padding(top = 4.dp)
-        )
-        Text(
-            text = "${detailPokeModel.types.map {
-                it.type.name
-            }.joinToString(", ")}",
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color.Gray,
-            modifier = Modifier.padding(top = 4.dp)
-        )
-
+        Card(
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier.padding(top = 4.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+        ) {
+            Text(
+                text = content,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(12.dp)
+            )
+        }
     }
 }

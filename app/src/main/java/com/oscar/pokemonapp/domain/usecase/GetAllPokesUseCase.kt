@@ -1,23 +1,17 @@
 package com.oscar.pokemonapp.domain.usecase
 
-import com.oscar.pokemonapp.commons.UseCase
+import androidx.paging.PagingData
+import com.oscar.pokemonapp.commons.BaseUseCase
 import com.oscar.pokemonapp.domain.entity.list.GetAllPokesData
 import com.oscar.pokemonapp.domain.repository.GetAllPokesRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class GetAllPokesUseCase @Inject constructor(
-    configuration: Configuration,
     private val getAllRepository: GetAllPokesRepository
-) : UseCase<GetAllPokesUseCase.Request, GetAllPokesUseCase.Response>(configuration) {
+): BaseUseCase<Unit,Flow<PagingData<GetAllPokesData>> >{
 
-    override fun process(request: Request): Flow<Response> =
-        getAllRepository.getAllPokes(request.limit)
-            .map {
-                Response(it)
-            }
-
-    data class Request(val limit: String) : UseCase.Request
-    data class Response(val dataList: List<GetAllPokesData>) : UseCase.Response
+    override suspend fun execute(input: Unit): Flow<PagingData<GetAllPokesData>> {
+        return getAllRepository.getAllPokes()
+    }
 }

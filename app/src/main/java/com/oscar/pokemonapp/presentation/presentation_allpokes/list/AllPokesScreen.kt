@@ -14,17 +14,18 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.oscar.pokemonapp.R
 import com.oscar.pokemonapp.commons.Constants
 import com.oscar.pokemonapp.commons.NavigationScreen
-import com.oscar.pokemonapp.presentation.common.CommonScreen
+import com.oscar.pokemonapp.domain.entity.list.GetAllPokesData
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,28 +33,24 @@ fun AllPokesScreen(
     viewModel: ListAllPokesViewModel,
     navController: NavHostController
 ) {
-    viewModel.loadAllPokes()
-    viewModel.getListFlow.collectAsState().value.let { state ->
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = { Text(stringResource(R.string.app_name)) },
-                    colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Blue)
-                )
-            }
-        ){ innerPadding ->
-            CommonScreen(state = state) {
-                AllPokes(listPokesModel = it, innerPadding){ itemId ->
-                    navController.navigate(NavigationScreen.Detail.route + "/"+ itemId)
-                }
-            }
+    val pokesList: LazyPagingItems<GetAllPokesData> = viewModel.getListFlow.collectAsLazyPagingItems()
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.app_name)) },
+                colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Blue)
+            )
+        }
+    ){ innerPadding ->
+        AllPokes(listPokesModel = pokesList , innerPadding){ itemId ->
+            navController.navigate(NavigationScreen.Detail.route + "/"+ itemId)
         }
     }
 }
 
 @Composable
 fun AllPokes(
-    listPokesModel: ListPokesModel,
+    listPokesModel: LazyPagingItems<GetAllPokesData>,
     paddingA: PaddingValues,
     onRowClick: (String) -> Unit
 ){
@@ -62,7 +59,7 @@ fun AllPokes(
 
 @Composable
 fun GridPoke(
-    pokes: ListPokesModel,
+    pokes: LazyPagingItems<GetAllPokesData>,
     paddingA: PaddingValues,
     onRowClick: (String) -> Unit
 ){
@@ -70,8 +67,8 @@ fun GridPoke(
         columns = GridCells.Adaptive(180.dp),
         modifier = Modifier.padding(paddingA))
     {
-        items(pokes.items.count()) { index ->
-            val poke = pokes.items[index] ?: return@items
+        items(pokes.itemCount) { index ->
+            val poke = pokes[index] ?: return@items
             PokeImage(modifier = Modifier, poke){
                 onRowClick(it)
             }
@@ -83,12 +80,13 @@ fun GridPoke(
 @Composable
 fun PokeImage(
     modifier: Modifier,
-    poke: ListItemPokesModel,
+    poke: GetAllPokesData,
     onRowClick: (String) -> Unit) {
     val imageurl = Constants.urlImage + poke.id + ".png"
     Column(
-        modifier = Modifier.padding(10.dp)
-            .clickable {  onRowClick(poke.id)},
+        modifier = Modifier
+            .padding(10.dp)
+            .clickable { onRowClick(poke.id) },
     ) {
         Card {
             AsyncImage(
