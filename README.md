@@ -42,10 +42,12 @@ The project follows **Clean Architecture**, which divides the codebase into thre
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourusername/PokeApp.git
+   git clone https://github.com/OscarDiazMunar/PokeApp.git
    ```
 2. Open the project in **Android Studio**.
-3. Sync Gradle and run the app on an emulator or a physical device.
+3. Add google-services.json
+4. add your default_web_client_id into strings.xml
+5. Sync Gradle and run the app on an emulator or a physical device.
 
 ## 🚀 Features
 
@@ -61,13 +63,11 @@ The project follows **Clean Architecture**, which divides the codebase into thre
 Here are some screenshots of PokeApp in action:
 
 ### Home Screen
-![Home Screen]
 <p align="center">
   <img width="270" src="https://github.com/OscarDiazMunar/PokeApp/blob/main/screenshots/screen1.png"/>
 </p>
 
 ### Pokémon Details
-![Pokemon Details]
 <p align="center">
   <img width="270" src="https://github.com/OscarDiazMunar/PokeApp/blob/main/screenshots/screen2.png"/>
 </p>
