@@ -10,10 +10,13 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -23,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,22 +40,40 @@ import com.oscar.pokemonapp.R
 import com.oscar.pokemonapp.commons.Constants
 import com.oscar.pokemonapp.commons.NavigationScreen
 import com.oscar.pokemonapp.domain.entity.list.GetAllPokesData
+import com.oscar.pokemonapp.presentation.presentation_allpokes.login.GoogleAuthUiClient
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AllPokesScreen(
     viewModel: ListAllPokesViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    googleAuthUiClient: GoogleAuthUiClient,
 ) {
     val pokesList: LazyPagingItems<GetAllPokesData> = viewModel.getListFlow.collectAsLazyPagingItems()
     var searchQuery by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
             Column {
                 TopAppBar(
                     title = { Text(stringResource(R.string.app_name)) },
-                    colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Blue)
+                    colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Blue),
+                    actions = {
+                        IconButton(onClick = {
+                            coroutineScope.launch{
+                                googleAuthUiClient.signOut()
+                                navController.popBackStack()
+                            }
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.ExitToApp,
+                                contentDescription = "close",
+                                tint = Color.White
+                            )
+                        }
+                    }
                 )
                 OutlinedTextField(
                     value = searchQuery,

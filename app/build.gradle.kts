@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlinAndroid)
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -87,9 +88,15 @@ dependencies {
     implementation(libs.paging.compose)
     implementation(libs.paging.runtime)
 
+    // Auth
+    implementation(libs.firebase.auth)
+    implementation(libs.play.services.auth)
 
 
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.coroutines.test)
+
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(platform(libs.compose.bom))
